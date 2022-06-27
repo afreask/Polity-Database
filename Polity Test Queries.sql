@@ -146,3 +146,11 @@ select * from Pages
 select * from email
 
 delete from PageURLS 
+
+INSERT INTO PageURLS
+	VALUES(6,3, 'https://www.gofundme.com/en-ca')
+
+INSERT INTO PageURLS
+	VALUES(7,3, 'https://printcalgary.com/products/lawn-signs/')
+
+SELECT * FROM POLICIES

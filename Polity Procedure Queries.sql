@@ -257,7 +257,7 @@ GO
 -- Test for the AddPlatform Procedure
 DECLARE @TestID INT
 DECLARE @CID INT = (select top 1 CANDIDATEID from candidate)
-EXECUTE @TestID = AddPlatform 1, @CID, 'test add platform', 'test description';
+EXECUTE @TestID = AddPlatform 2, @CID, 'test add platform', 'test description';
 SELECT @TestID
 GO
 DECLARE @TestID INT
@@ -271,9 +271,9 @@ SELECT @TestID
 GO
 
 
--- Procedure to add a key platform
+-- Procedure to add a policy
 -- Parameters: 
--- Return: ID of the new platform or 0 if it was not successful
+-- Return: ID of the new policy or 0 if it was not successful
 CREATE PROCEDURE AddPolicy
 (
 	@UserID INT, 
@@ -357,11 +357,11 @@ EXECUTE @TestID = AddPolicyCard @UserID, @CandidateID, @PolicyID, 'Reduce Proper
 SELECT @TestID
 GO
 DECLARE @TestID INT
-EXECUTE @TestID = AddPolicyCard 1, 0, 1, 'Reduce Property Taxes', 'test details';
+EXECUTE @TestID = AddPolicyCard 2, 1, 2, 'Reduce Property Taxes', 'test details';
 SELECT @TestID
 GO
 DECLARE @TestID INT
-EXECUTE @TestID = AddPolicyCard 1, 1, 0, 'Reduce Property Taxes', 'test details';
+EXECUTE @TestID = AddPolicyCard 2, 1, 2, 'Train To Airport', 'test details';
 SELECT @TestID
 GO
 DECLARE @TestID INT

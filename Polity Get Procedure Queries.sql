@@ -144,7 +144,7 @@ AS
 	RETURN @ReturnCode
 GO
 
---EXECUTE GetUserPages 1;
+--EXECUTE GetUserPages 2;
 GO 
 
 -- Procedure to get a user's candidate via the page id
@@ -239,7 +239,7 @@ AS
 GO
 
 -- Test for GetPageLinks
-EXECUTE GetPageLinks 2, 1
+EXECUTE GetPageLinks 3, 2
 GO
 
 -- Procedure to get a candidate's policy card
@@ -257,7 +257,7 @@ AS
 	IF @UserType > 0
 	AND EXISTS (SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
 	BEGIN
-		SELECT Policies.PolicyID, POLICYNAME, TITLE, DETAILS
+		SELECT PolicyCard.POLICYCARDID, Policies.PolicyID, POLICYNAME, TITLE, DETAILS
 			FROM Policies
 		JOIN PolicyCard
 			ON PolicyCard.POLICYID =  Policies.POLICYID
@@ -266,7 +266,7 @@ AS
 GO
 
 -- Test GetPagePolicyCards
-EXECUTE GetCandidatePolicyCards 1, 4
+EXECUTE GetCandidatePolicyCards 2, 1
 EXECUTE GetCandidatePolicyCards 1, 2
 GO
 SELECT * FROM PolicyCard
@@ -315,7 +315,7 @@ GO
 CREATE PROCEDURE GetURLs
 AS 
 	SELECT URLID, URLNAME
-		FROM URLS
+		FROM URLs
 GO
 
 -- Test GetPolicies
