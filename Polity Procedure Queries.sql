@@ -325,7 +325,8 @@ CREATE PROCEDURE AddPolicyCard
 	@CandidateID INT,
 	@PolicyID INT,
 	@Title VARCHAR(50),
-	@Details VARCHAR(500)
+	@Details VARCHAR(75),
+	@LearnMore VARCHAR(500)
 )
 AS
 	DECLARE @ReturnCode INT, @UserType INT
@@ -335,11 +336,12 @@ AS
 	IF @UserType > 0
 	AND @Title IS NOT NULL AND LEN(LTRIM(@Title)) > 0
 	AND @Details IS NOT NULL AND LEN(LTRIM(@Details)) > 0
+	AND @LearnMore IS NOT NULL AND LEN(LTRIM(@LearnMore)) > 0
 	AND EXISTS(SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
 	AND EXISTS(SELECT * FROM Policies WHERE POLICYID = @PolicyID)
 	BEGIN
 		INSERT INTO PolicyCard
-			VALUES (@CandidateID, @PolicyID, @Title, @Details)
+			VALUES (@CandidateID, @PolicyID, @Title, @Details, @LearnMore)
 		IF @@ERROR = 0
 			SET @ReturnCode = 1
 	END
@@ -353,11 +355,11 @@ DECLARE @TestID INT
 DECLARE @CandidateID INT = (SELECT TOP 1 CANDIDATEID FROM Candidate)
 DECLARE @PolicyID INT = (SELECT TOP 1 POLICYID FROM Policies)
 DECLARE @UserID INT = (SELECT TOP 1 USERID FROM Users)
-EXECUTE @TestID = AddPolicyCard @UserID, @CandidateID, @PolicyID, 'Reduce Property Taxes', 'test details';
+EXECUTE @TestID = AddPolicyCard @UserID, @CandidateID, @PolicyID, 'Reduce Property Taxes', 'test details', 'test learn more'
 SELECT @TestID
 GO
 DECLARE @TestID INT
-EXECUTE @TestID = AddPolicyCard 2, 1, 2, 'Reduce Property Taxes', 'test details';
+EXECUTE @TestID = AddPolicyCard 2, 1, 1, 'Reduce Property Taxes', 'test details', 'test learn more'
 SELECT @TestID
 GO
 DECLARE @TestID INT

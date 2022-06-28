@@ -145,7 +145,7 @@ select * from Pages
 
 select * from email
 
-delete from PageURLS 
+delete from PageURLS WHERE URLID = 1
 
 INSERT INTO PageURLS
 	VALUES(6,3, 'https://www.gofundme.com/en-ca')
@@ -153,4 +153,10 @@ INSERT INTO PageURLS
 INSERT INTO PageURLS
 	VALUES(7,3, 'https://printcalgary.com/products/lawn-signs/')
 
+INSERT INTO PageURLS
+	VALUES(1,3, 'https://facebook.com')
+
+
 SELECT * FROM POLICIES
+
+SELECT * FROM PageURLS

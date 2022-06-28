@@ -257,7 +257,7 @@ AS
 	IF @UserType > 0
 	AND EXISTS (SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
 	BEGIN
-		SELECT PolicyCard.POLICYCARDID, Policies.PolicyID, POLICYNAME, TITLE, DETAILS
+		SELECT PolicyCard.POLICYCARDID, Policies.PolicyID, POLICYNAME, TITLE, DETAILS, LEARNMORE
 			FROM Policies
 		JOIN PolicyCard
 			ON PolicyCard.POLICYID =  Policies.POLICYID
@@ -270,6 +270,7 @@ EXECUTE GetCandidatePolicyCards 2, 1
 EXECUTE GetCandidatePolicyCards 1, 2
 GO
 SELECT * FROM PolicyCard
+GO
 
 -- Procedure to get a candidate's key platforms
 -- Parameters: user id, page id
