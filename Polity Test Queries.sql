@@ -160,3 +160,10 @@ INSERT INTO PageURLS
 SELECT * FROM POLICIES
 
 SELECT * FROM PageURLS
+
+SELECT * 
+	FROM PersonEmail
+JOIN Email 
+	ON PersonEmail.EmailID = Email.EmailID
+WHERE EMAILADDRESS = 'test@gmail.com'
+AND EMAILTYPE = 1

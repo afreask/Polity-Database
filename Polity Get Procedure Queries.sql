@@ -321,3 +321,22 @@ GO
 
 -- Test GetPolicies
 EXECUTE GetURLs
+GO
+
+-- Procedure to get a person's emails
+-- Parameters: Person's ID
+-- Returns a list of the person's email addresses
+CREATE PROCEDURE GetPersonEmails
+(
+	@ID INT
+)
+AS 
+	SELECT Email.EmailID, EMAILADDRESS, EMAILTYPE
+		FROM PersonEmail
+	JOIN Email
+		ON PersonEmail.EmailID = Email.EmailID
+	WHERE PERSONID = @ID
+GO
+
+-- Test for GetPersonEmails
+EXECUTE GetPersonEmails 1
