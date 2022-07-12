@@ -269,6 +269,7 @@ DECLARE @TestID INT
 EXECUTE @TestID = AddPlatform 1, 1, 'test add platform', NULL;
 SELECT @TestID
 GO
+SELECT * FROM Candidate
 
 
 -- Procedure to add a policy
@@ -318,6 +319,7 @@ GO
 --		Policy ID
 --		Card Title
 --		Details
+--		Learn More
 -- Return: 1 if successful or 0 if it was not successful
 CREATE PROCEDURE AddPolicyCard
 (
@@ -442,7 +444,7 @@ CREATE PROCEDURE AddPageURL
 	@UserID INT,
 	@PageID INT,
 	@URLID INT,
-	@Link TEXT
+	@Link VARCHAR(2050)
 )
 AS
 	DECLARE @ReturnCode INT
@@ -450,7 +452,7 @@ AS
 
 	IF EXISTS (SELECT * FROM Pages WHERE USERID = @UserID AND PAGEID = @PageID)
 	AND EXISTS (SELECT * FROM URLS WHERE URLID = @URLID)
-	AND LEN((SELECT REPLACE(CAST(@Link AS VARCHAR(MAX)), ' ', ''))) > 0
+	AND @Link IS NOT NULL AND LEN(LTRIM(@Link)) > 0 
 	BEGIN
 		INSERT INTO PageURLS
 			VALUES (@URLID, @PageID, @Link)
@@ -461,6 +463,7 @@ AS
 GO
 
 Select * from PageURLS
+select * from URLS ORDER BY URLID ASC
 -- Test AddPageUrl procedure
 DECLARE @TestID INT, @PageID INT, @URLID INT
 SET @URLID = (SELECT TOP 1 URLID FROM URLS)
