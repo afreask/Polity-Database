@@ -82,6 +82,7 @@ DECLARE @TestID INT
 EXECUTE @TestID = UserChecker 1;
 SELECT @TestID
 GO
+
 DECLARE @TestID INT
 EXECUTE @TestID = UserChecker 2;
 SELECT @TestID
@@ -144,18 +145,54 @@ AS
 	RETURN @ReturnCode
 GO
 
---EXECUTE GetUserPages 2;
+--EXECUTE GetUserPages 1;
 GO 
 
--- Procedure to get a user's candidate via the page id
--- Parameters: user id, page id
+-- Procedure to get user pages
+-- Parameters: PageID
 -- Returns the page id, person id,
 -- and candidate:	first name , 
 --					last name, 
 --					date of birth, 
 --					gender, 
 --					bio
-CREATE PROCEDURE GetUserCandidate(@UserID INT, @PageID INT)
+CREATE PROCEDURE GetPage(@PageID INT)
+AS
+	DECLARE @ReturnCode INT
+	SET @ReturnCode = 1
+
+	SELECT 	PAGEID, ID, Candidate.CANDIDATEID, FIRSTNAME, LASTNAME, 
+		CASE WHEN DATEOFBIRTH IS NULL
+		THEN CAST('0001-01-01' AS DATE)
+	ELSE DATEOFBIRTH END,  GENDER, BIO
+		FROM Pages
+	JOIN Candidate
+		ON Candidate.CANDIDATEID = Pages.CANDIDATEID
+	JOIN PERSON
+		ON PERSONID = ID
+	WHERE Pages.PAGEID = @PageID
+
+	IF @@ERROR = 0
+		SET @ReturnCode = 0
+	ELSE 
+		RAISERROR('GetPage - SELECT error: Page Table.', 16, 1)
+
+	RETURN @ReturnCode
+GO
+
+-- EXECUTE GetPage 2;
+GO 
+
+
+-- Procedure to get a user's candidate via the page id
+-- Parameters: page id
+-- Returns the page id, person id,
+-- and candidate:	first name , 
+--					last name, 
+--					date of birth, 
+--					gender, 
+--					bio
+CREATE PROCEDURE GetCandidate(@PageID INT)
 AS
 	DECLARE @ReturnCode INT
 	SET @ReturnCode = 1
@@ -169,18 +206,17 @@ AS
 		ON Candidate.CANDIDATEID = Pages.CANDIDATEID
 	JOIN PERSON
 		ON PERSONID = ID
-	WHERE USERID = @UserID
-	AND PAGEID = @PageID
+	WHERE PAGEID = @PageID
 
 	IF @@ERROR = 0
 		SET @ReturnCode = 0
 	ELSE 
-		RAISERROR('GetUserCandidate - SELECT error: Page Table.', 16, 1)
+		RAISERROR('GetCandidate - SELECT error: Page Table.', 16, 1)
 
 	RETURN @ReturnCode
 GO
 
---EXECUTE GetUserCandidate 1,16;
+--EXECUTE GetCandidate 16;
 GO 
 
 
@@ -201,7 +237,7 @@ AS
 		CASE WHEN DATEOFBIRTH IS NULL 
 			THEN '0000-00-00'
 		ELSE DATEOFBIRTH END, 
-		GENDER 
+		GENDER, USERTYPE 
 		FROM Users
 	JOIN Person
 		ON ID = Users.PERSONID
@@ -226,9 +262,9 @@ GO
 --		URL ID,
 --		URL NAME,
 --		Link
-CREATE PROCEDURE GetPageLinks(@PageID INT, @UserID INT)
+CREATE PROCEDURE GetPageLinks(@PageID INT)
 AS 
-	IF EXISTS (SELECT * FROM Pages WHERE PAGEID = @PageID AND USERID = @UserID)
+	IF EXISTS (SELECT * FROM Pages WHERE PAGEID = @PageID)
 	BEGIN
 		SELECT URLS.URLID, URLNAME, LINK
 			FROM URLS
@@ -239,23 +275,21 @@ AS
 GO
 
 -- Test for GetPageLinks
-EXECUTE GetPageLinks 3, 2
+EXECUTE GetPageLinks 2
 GO
 
 -- Procedure to get a candidate's policy card
--- Parameters: user id, page id
+-- Parameters: page id
 -- Returns user's:	
 --		Policy id,
 --		Policy name, 
 --		Title, 
 --		Detail
-CREATE PROCEDURE GetCandidatePolicyCards(@UserID INT, @CandidateID INT)
+--		Learn More
+CREATE PROCEDURE GetCandidatePolicyCards(@CandidateID INT)
 AS 
-	DECLARE @UserType INT
-	EXEC @UserType = UserChecker @UserID
 
-	IF @UserType > 0
-	AND EXISTS (SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
+	IF EXISTS (SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
 	BEGIN
 		SELECT PolicyCard.POLICYCARDID, Policies.PolicyID, POLICYNAME, TITLE, DETAILS, LEARNMORE
 			FROM Policies
@@ -266,26 +300,24 @@ AS
 GO
 
 -- Test GetPagePolicyCards
-EXECUTE GetCandidatePolicyCards 2, 1
-EXECUTE GetCandidatePolicyCards 1, 2
+EXECUTE GetCandidatePolicyCards 2
+EXECUTE GetCandidatePolicyCards 1
 GO
 SELECT * FROM PolicyCard
 GO
 
 -- Procedure to get a candidate's key platforms
--- Parameters: user id, page id
+-- Parameters: CandidateID
 -- Returns user's:	
 --		Policy id,
 --		Policy name, 
 --		Title, 
 --		Detail
-CREATE PROCEDURE GetCandidateKeyPlatforms(@UserID INT, @CandidateID INT)
+CREATE PROCEDURE GetCandidateKeyPlatforms(@CandidateID INT)
 AS 
 	DECLARE @UserType INT
-	EXEC @UserType = UserChecker @UserID
 
-	IF @UserType > 0
-	AND EXISTS (SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
+	IF EXISTS (SELECT * FROM Candidate WHERE CANDIDATEID = @CandidateID)
 	BEGIN
 		SELECT PLATFORMID, TITLE, DESCRIPTION
 			FROM KeyPlatforms
@@ -294,8 +326,8 @@ AS
 GO
 
 -- Test GetCandidateKeyPlatforms
-EXECUTE GetCandidateKeyPlatforms 1, 4
-EXECUTE GetCandidateKeyPlatforms 1, 2
+EXECUTE GetCandidateKeyPlatforms 1
+EXECUTE GetCandidateKeyPlatforms 2
 SELECT * FROM KeyPlatforms
 GO
 
