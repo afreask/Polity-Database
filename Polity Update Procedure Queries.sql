@@ -61,8 +61,8 @@ AS
 	EXECUTE @UserType = UserChecker @UserID
 	
 	IF @FirstName IS NOT NULL AND LEN(LTRIM(@FirstName)) > 0
-	IF @LastName IS NOT NULL AND LEN(LTRIM(@LastName)) > 0
-	IF @UserType > 0
+	AND @LastName IS NOT NULL AND LEN(LTRIM(@LastName)) > 0
+	AND @UserType > 0
 	BEGIN
 		IF EXISTS 
 		(
@@ -88,6 +88,80 @@ GO
 --SELECT * FROM Person
 --SELECT * FROM Users
 GO
+
+
+-- Procedure to update a person's first name
+-- Checks whether the person exists or not
+-- Updates the person's first name if it exists and not null or whitespace blank
+-- Parameters: 
+--			UserID : Only a user can do such
+--			ID
+--			First name
+-- Returns 1 id successful or 0 if not
+CREATE PROCEDURE UpdateFirstName
+(
+	@UserID INT,
+	@ID INT,
+	@FirstName VARCHAR(250)
+)
+AS
+	DECLARE @ReturnID INT, @UserType INT
+	SET @ReturnID = 0 
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @FirstName IS NOT NULL AND LEN(LTRIM(@FirstName)) > 0
+	IF @UserType > 0
+	BEGIN
+		IF EXISTS 
+		(
+			SELECT * FROM Person WHERE ID = @ID
+		)
+			BEGIN
+				UPDATE Person 
+					SET FIRSTNAME= @FirstName
+				WHERE ID = @ID
+				SET @ReturnID = 1
+			END
+	END
+	RETURN @ReturnID
+GO
+
+-- Procedure to update a person's last name
+-- Checks whether the person exists or not
+-- Updates the person's last name if it exists and not null or whitespace blank
+-- Parameters: 
+--			UserID : Only a user can do such
+--			ID
+--			Last name
+-- Returns 1 id successful or 0 if not
+CREATE PROCEDURE UpdateLastName
+(
+	@UserID INT,
+	@ID INT,
+	@LastName VARCHAR(250)
+)
+AS
+	DECLARE @ReturnID INT, @UserType INT
+	SET @ReturnID = 0 
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @LastName IS NOT NULL AND LEN(LTRIM(@LastName)) > 0
+	AND @UserType > 0
+	BEGIN
+		IF EXISTS 
+		(
+			SELECT * FROM Person WHERE ID = @ID
+		)
+			BEGIN
+				UPDATE Person 
+					SET LASTNAME = @LastName
+				WHERE ID = @ID
+				SET @ReturnID = 1
+			END
+	END
+	RETURN @ReturnID
+GO
+
 
 -- Procedure to update a candidate
 -- Parameters: candidate's id and bio
