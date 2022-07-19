@@ -113,6 +113,36 @@ GO
 --EXECUTE EmailChecker 'test@gmail.com'
 GO
 
+-- Procedure to get all candidates
+-- Returns the page id, person id,
+-- and candidate:	first name , 
+--					last name, 
+--					date of birth, 
+--					gender, 
+--					bio
+CREATE PROCEDURE GetAllCandidates
+AS
+	DECLARE @ReturnCode INT
+	SET @ReturnCode = 1
+
+	SELECT 	PAGEID, ID, Candidate.CANDIDATEID, FIRSTNAME, LASTNAME, 
+		CASE WHEN DATEOFBIRTH IS NULL 
+		THEN CAST('0001-01-01' AS DATE)
+	ELSE DATEOFBIRTH END,  GENDER, BIO
+		FROM Pages
+	JOIN Candidate
+		ON Candidate.CANDIDATEID = Pages.CANDIDATEID
+	JOIN PERSON
+		ON PERSONID = ID
+
+	IF @@ERROR = 0
+		SET @ReturnCode = 0
+	ELSE 
+		RAISERROR('GetAllCandidates - SELECT error: User Table.', 16, 1)
+
+	RETURN @ReturnCode
+GO
+
 -- Procedure to get user pages
 -- Parameters: user id
 -- Returns the page id, person id,
