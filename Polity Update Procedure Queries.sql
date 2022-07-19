@@ -110,7 +110,7 @@ AS
 	EXECUTE @UserType = UserChecker @UserID
 	
 	IF @FirstName IS NOT NULL AND LEN(LTRIM(@FirstName)) > 0
-	IF @UserType > 0
+	AND @UserType > 0
 	BEGIN
 		IF EXISTS 
 		(
@@ -229,13 +229,69 @@ AS
 	RETURN @ReturnID
 GO
 
-
 -- Test UpdatePerson
 DECLARE @TestID INT
 EXECUTE @TestID = UpdatePlatform 1, 5, 'Test UpdatePlatform Title', 'Test UpdatePlatform Description'
 SELECT @TestID
 SELECT * FROM KeyPlatforms
 SELECT * FROM Users
+GO
+
+-- Procedure to update a key platform
+-- Parameters: 
+--		User ID
+--		Platform ID
+--		Title
+-- Returns 1 id successful or 0 if not
+CREATE PROCEDURE UpdatePlatformTitle
+(
+	@UserID INT,
+	@PlatformID INT,
+	@Title VARCHAR(100)
+)
+AS
+	DECLARE @ReturnID INT
+	SET @ReturnID = 0
+	
+	IF @Title IS NOT NULL AND LEN(LTRIM(@Title)) > 0
+	AND EXISTS(SELECT * FROM KeyPlatforms WHERE PLATFORMID = @PlatformID)
+	BEGIN
+		UPDATE KeyPlatforms
+			SET TITLE = @Title
+		WHERE PLATFORMID = @PlatformID
+		SET @ReturnID = 1
+	END
+
+	RETURN @ReturnID
+GO
+
+-- Procedure to update a key platform
+-- Parameters: 
+--		User ID
+--		Platform ID
+--		Title
+--		Description
+-- Returns 1 id successful or 0 if not
+CREATE PROCEDURE UpdatePlatformDescription
+(
+	@UserID INT,
+	@PlatformID INT,
+	@Description TEXT
+)
+AS
+	DECLARE @ReturnID INT
+	SET @ReturnID = 0
+	
+	IF LEN((SELECT REPLACE(CAST(@Description AS VARCHAR(MAX)), ' ', ''))) > 0
+	AND EXISTS(SELECT * FROM KeyPlatforms WHERE PLATFORMID = @PlatformID)
+	BEGIN
+		UPDATE KeyPlatforms
+			SET DESCRIPTION = @Description
+		WHERE PLATFORMID = @PlatformID
+		SET @ReturnID = 1
+	END
+
+	RETURN @ReturnID
 GO
 
 -- Procedure to updates a policy card
@@ -281,6 +337,96 @@ DECLARE @TestID INT
 EXECUTE @TestID = UpdatePolicyCard 1, 1, 'Reduce Property Taxes update', 'test update details', 'test update learn more'
 SELECT @TestID
 SELECT * FROM PolicyCard
+GO
+
+-- Procedure to updates a policy card
+-- Parameters: 
+--		User ID
+--		Policy Card ID
+--		Card Title
+-- Return: 1 if successful or 0 if it was not successful
+CREATE PROCEDURE UpdatePolicyCardTitle
+(
+	@UserID INT,
+	@PCID INT,
+	@Title VARCHAR(50)
+)
+AS
+	DECLARE @ReturnCode INT, @UserType INT
+	SET @ReturnCode = 0
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @UserType > 0
+	AND @Title IS NOT NULL AND LEN(LTRIM(@Title)) > 0
+	AND EXISTS(SELECT * FROM PolicyCard WHERE POLICYCARDID = @PCID)
+	BEGIN
+		UPDATE PolicyCard
+			SET TITLE = @Title
+		WHERE POLICYCARDID = @PCID
+		SET @ReturnCode = 1
+	END
+
+	RETURN @ReturnCode
+GO
+
+-- Procedure to updates a policy card
+-- Parameters: 
+--		User ID
+--		Policy Card ID
+--		Details
+-- Return: 1 if successful or 0 if it was not successful
+CREATE PROCEDURE UpdatePolicyCardDetails
+(
+	@UserID INT,
+	@PCID INT,
+	@Details VARCHAR(75)
+)
+AS
+	DECLARE @ReturnCode INT, @UserType INT
+	SET @ReturnCode = 0
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @UserType > 0
+	AND @Details IS NOT NULL AND LEN(LTRIM(@Details)) > 0
+	AND EXISTS(SELECT * FROM PolicyCard WHERE POLICYCARDID = @PCID)
+	BEGIN
+		UPDATE PolicyCard
+			SET DETAILS = @Details
+		WHERE POLICYCARDID = @PCID
+		SET @ReturnCode = 1
+	END
+
+	RETURN @ReturnCode
+GO
+
+-- Procedure to updates a policy card
+-- Parameters: 
+--		User ID
+--		Policy Card ID
+--		Learn more
+-- Return: 1 if successful or 0 if it was not successful
+CREATE PROCEDURE UpdatePolicyCardLearnMore
+(
+	@UserID INT,
+	@PCID INT,
+	@LearnMore VARCHAR(500)
+)
+AS
+	DECLARE @ReturnCode INT, @UserType INT
+	SET @ReturnCode = 0
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @UserType > 0
+	AND @LearnMore IS NOT NULL AND LEN(LTRIM(@LearnMore)) > 0
+	AND EXISTS(SELECT * FROM PolicyCard WHERE POLICYCARDID = @PCID)
+	BEGIN
+		UPDATE PolicyCard
+			SET LEARNMORE = @LearnMore
+		WHERE POLICYCARDID = @PCID
+		SET @ReturnCode = 1
+	END
+
+	RETURN @ReturnCode
 GO
 
 -- Procedure to update a link to a certain page
