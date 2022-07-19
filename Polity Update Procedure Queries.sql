@@ -1,4 +1,4 @@
--- Procedure to update email addresses
+Up-- Procedure to update email addresses
 -- Checks whether the email exists or not
 -- Updates the email if it exists and not null or whitespace blank
 -- Parameters: 
@@ -100,8 +100,8 @@ GO
 -- Returns 1 id successful or 0 if not
 CREATE PROCEDURE UpdateFirstName
 (
-	@UserID INT,
 	@ID INT,
+	@UserID INT,
 	@FirstName VARCHAR(250)
 )
 AS
