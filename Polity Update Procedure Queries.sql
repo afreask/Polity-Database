@@ -1,4 +1,4 @@
-Up-- Procedure to update email addresses
+-- Procedure to update email addresses
 -- Checks whether the email exists or not
 -- Updates the email if it exists and not null or whitespace blank
 -- Parameters: 
@@ -7,6 +7,42 @@ Up-- Procedure to update email addresses
 --			User ID
 -- Returns 1 id successful or 0 if not
 CREATE PROCEDURE UpdateEmail
+(
+	@Email VARCHAR(400) = NULL, 
+	@EmailID INT,
+	@UserID INT
+)
+AS
+	DECLARE @ReturnID INT, @UserType INT
+	SET @ReturnID = 0 
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @Email IS NOT NULL AND LEN(LTRIM(@Email)) > 0
+	IF @UserType > 0
+	BEGIN
+		IF EXISTS 
+		(
+			SELECT * FROM Email WHERE EMAILADDRESS = @Email
+		)
+			BEGIN
+				UPDATE Email 
+					SET EMAILADDRESS = @Email
+				WHERE EmailID = @EmailID
+				SET @ReturnID = 1
+			END
+	END
+	RETURN @ReturnID
+GO
+
+-- Procedure to update email addresses
+-- Checks whether the email exists or not
+-- Updates the email if it exists and not null or whitespace blank
+-- Parameters: 
+--			Email address
+--			Email ID
+--			User ID
+-- Returns 1 id successful or 0 if not
+CREATE PROCEDURE UpdatePersonEmail
 (
 	@Email VARCHAR(400) = NULL, 
 	@EmailID INT,
@@ -338,6 +374,39 @@ EXECUTE @TestID = UpdatePolicyCard 1, 1, 'Reduce Property Taxes update', 'test u
 SELECT @TestID
 SELECT * FROM PolicyCard
 GO
+
+-- Procedure to updates a policy card category
+-- Parameters: 
+--		User ID
+--		Policy Card ID
+--		Polcy ID
+--		Details
+--		Learn more
+-- Return: 1 if successful or 0 if it was not successful
+CREATE PROCEDURE UpdatePolicyCardCategory
+(
+	@UserID INT,
+	@PCID INT,
+	@PolicyID INT
+)
+AS
+	DECLARE @ReturnCode INT, @UserType INT
+	SET @ReturnCode = 0
+	EXECUTE @UserType = UserChecker @UserID
+	
+	IF @UserType > 0
+	AND EXISTS(SELECT * FROM PolicyCard WHERE POLICYCARDID = @PCID)
+	BEGIN
+		UPDATE PolicyCard
+			SET POLICYID = @PolicyID
+		WHERE POLICYCARDID = @PCID
+		SET @ReturnCode = 1
+	END
+
+	RETURN @ReturnCode
+GO
+
+
 
 -- Procedure to updates a policy card
 -- Parameters: 
