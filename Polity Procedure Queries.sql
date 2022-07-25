@@ -331,8 +331,8 @@ CREATE PROCEDURE AddPolicyCard
 	@LearnMore VARCHAR(500)
 )
 AS
-	DECLARE @ReturnCode INT, @UserType INT
-	SET @ReturnCode = 0
+	DECLARE @ReturnID INT, @UserType INT
+	SET @ReturnID = 0
 	EXECUTE @UserType = UserChecker @UserID
 	
 	IF @UserType > 0
@@ -344,11 +344,10 @@ AS
 	BEGIN
 		INSERT INTO PolicyCard
 			VALUES (@CandidateID, @PolicyID, @Title, @Details, @LearnMore)
-		IF @@ERROR = 0
-			SET @ReturnCode = 1
+		SET @ReturnID = SCOPE_IDENTITY()
 	END
 
-	RETURN @ReturnCode
+	RETURN @ReturnID
 GO
 
 select * from PolicyCard
@@ -456,7 +455,7 @@ AS
 	BEGIN
 		INSERT INTO PageURLS
 			VALUES (@URLID, @PageID, @Link)
-		SET @ReturnCode = 1
+		SET @ReturnCode = SCOPE_IDENTITY()
 	END
 
 	RETURN @ReturnCode
