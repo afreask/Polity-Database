@@ -292,11 +292,12 @@ GO
 --		URL ID,
 --		URL NAME,
 --		Link
+--		PAGEURLID
 CREATE PROCEDURE GetPageLinks(@PageID INT)
 AS 
 	IF EXISTS (SELECT * FROM Pages WHERE PAGEID = @PageID)
 	BEGIN
-		SELECT URLS.URLID, URLNAME, LINK
+		SELECT URLS.URLID, URLNAME, LINK, PAGEURLID
 			FROM URLS
 		JOIN PageURLS
 			ON PageURLS.URLID = URLS.URLID
@@ -305,7 +306,35 @@ AS
 GO
 
 -- Test for GetPageLinks
-EXECUTE GetPageLinks 2
+EXECUTE GetPageLinks 14
+GO
+
+-- Procedure to get a specific page's url links
+-- Parameters: Page's ID
+-- Returns user's:	
+--		URL ID,
+--		URL NAME,
+--		Link
+--		PAGEURLID
+CREATE PROCEDURE GetSpecificPageLink
+(
+	@PageID INT,
+	@URLID INT
+)
+AS 
+	IF EXISTS (SELECT * FROM Pages WHERE PAGEID = @PageID)
+	BEGIN
+		SELECT URLS.URLID, URLNAME, LINK, PAGEURLID
+			FROM URLS
+		JOIN PageURLS
+			ON PageURLS.URLID = URLS.URLID
+		WHERE PageURLS.PageID = @PageID
+		AND URLS.URLID = @URLID
+	END
+GO
+
+-- Test for GetSpecificPageLink
+EXECUTE GetSpecificPageLink 14, 4
 GO
 
 -- Procedure to get a candidate's policy card
