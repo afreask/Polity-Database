@@ -44,7 +44,7 @@ GO
 -- Returns 1 id successful or 0 if not
 CREATE PROCEDURE UpdatePersonEmail
 (
-	@Email VARCHAR(400) = NULL, 
+	@ID INT,
 	@EmailID INT,
 	@UserID INT
 )
@@ -53,17 +53,16 @@ AS
 	SET @ReturnID = 0 
 	EXECUTE @UserType = UserChecker @UserID
 	
-	IF @Email IS NOT NULL AND LEN(LTRIM(@Email)) > 0
-	IF @UserType > 0
+	IF @ID > 0 AND @EmailID > 0 AND @UserType > 0
 	BEGIN
 		IF EXISTS 
 		(
-			SELECT * FROM Email WHERE EMAILADDRESS = @Email
+			SELECT * FROM Email WHERE EMAILID = @EmailID
 		)
 			BEGIN
-				UPDATE Email 
-					SET EMAILADDRESS = @Email
-				WHERE EmailID = @EmailID
+				UPDATE PersonEmail 
+					SET EmailID = @EmailID
+				WHERE PERSONID = @ID
 				SET @ReturnID = 1
 			END
 	END
@@ -342,6 +341,7 @@ CREATE PROCEDURE UpdatePolicyCard
 (
 	@UserID INT,
 	@PCID INT,
+	@PolicyID INT,
 	@Title VARCHAR(50),
 	@Details VARCHAR(75),
 	@LearnMore VARCHAR(500)
@@ -358,7 +358,8 @@ AS
 	AND EXISTS(SELECT * FROM PolicyCard WHERE POLICYCARDID = @PCID)
 	BEGIN
 		UPDATE PolicyCard
-			SET TITLE = @Title,
+			SET POLICYID = @PolicyID,
+				TITLE = @Title,
 				DETAILS = @Details,
 				LEARNMORE = @LearnMore
 		WHERE POLICYCARDID = @PCID
@@ -408,7 +409,7 @@ GO
 
 
 
--- Procedure to updates a policy card
+-- Procedure to updates a policy card title
 -- Parameters: 
 --		User ID
 --		Policy Card ID
@@ -438,7 +439,7 @@ AS
 	RETURN @ReturnCode
 GO
 
--- Procedure to updates a policy card
+-- Procedure to updates a policy card details
 -- Parameters: 
 --		User ID
 --		Policy Card ID
@@ -468,7 +469,7 @@ AS
 	RETURN @ReturnCode
 GO
 
--- Procedure to updates a policy card
+-- Procedure to updates a policy card learn more
 -- Parameters: 
 --		User ID
 --		Policy Card ID
@@ -500,12 +501,14 @@ GO
 
 -- Procedure to update a link to a certain page
 -- Parameters: 
+--		User ID
+--		Page URL ID
+--		Link
 -- Return: 1 if successful or 0 if it was not successful
 CREATE PROCEDURE UpdatePageURL
 (
 	@UserID INT,
-	@PageID INT,
-	@URLID INT,
+	@PageURLID INT,
 	@Link VARCHAR(2050)
 )
 AS
@@ -514,14 +517,12 @@ AS
 	EXECUTE @UserType = UserChecker @UserID
 
 	IF @UserType > 0
-	AND EXISTS (SELECT * FROM Pages WHERE USERID = @UserID AND PAGEID = @PageID)
-	AND EXISTS (SELECT * FROM URLS WHERE URLID = @URLID)
+	AND EXISTS (SELECT * FROM PageURLS WHERE PAGEURLID = @PageURLID)
 	AND @Link IS NOT NULL AND LEN(LTRIM(@Link)) > 0 
 	BEGIN
 		UPDATE PageURLS
 			SET LINK = @Link
-		WHERE PAGEID = @PageID
-		AND URLID = @URLID
+		WHERE PAGEURLID = @PageURLID
 		SET @ReturnCode = 1
 	END
 
