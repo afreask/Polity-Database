@@ -185,3 +185,19 @@ WHERE CANDIDATEID = 16
 SELECT * FROM PAGEURLS
 WHERE PAGEID = 14
 AND URLID = 6
+
+INSERT INTO PolicyCardTitles
+	VALUES(1,'Reduce Property Taxes')
+
+INSERT INTO Style
+	VALUES('Art')
+
+INSERT INTO Style
+	VALUES('Train')
+
+INSERT INTO Style
+	VALUES('Tax')
+
+
+INSERT INTO PolicyCardStyle
+	VALUES(1, 3)
