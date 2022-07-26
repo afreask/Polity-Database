@@ -431,3 +431,24 @@ GO
 
 -- Test for GetPersonEmails
 EXECUTE GetPersonEmails 1
+
+-- Procedure to get a card's style
+-- Parameters: Policy cards's ID
+-- Returns a list of the card's style
+CREATE PROCEDURE GetPolicyCardStyle(@PCID INT)
+AS
+	SELECT Style.StyleID, StyleName
+		FROM Style
+	JOIN PolicyCardStyle
+	ON PolicyCardStyle.STYLEID = Style.STYLEID
+	WHERE PolicyCardStyle.POLICYCARDID = @PCID
+GO
+
+EXECUTE GetPolicyCardStyle 1
+GO
+
+CREATE PROCEDURE GetCardStyles
+AS
+	SELECT Style.StyleID, StyleName
+		FROM Style
+GO
